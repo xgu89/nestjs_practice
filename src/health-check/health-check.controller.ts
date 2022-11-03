@@ -8,6 +8,6 @@ export class HealthCheckController {
   constructor(private configService: ConfigService) {}
   @Get()
   index() {
-    return this.configService.get<string>('TEST');
+    return this.configService.get<string>('TEST') || "❤";
   }
 }

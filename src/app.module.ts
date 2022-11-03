@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
+import { MongooseModule } from "@nestjs/mongoose";
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { join } from 'path';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get('HOST'),
         port: 3306,
@@ -33,8 +34,22 @@ import { join } from 'path';
     }),
     ConfigModule.forRoot({
       cache: true,
-      envFilePath: [join(__dirname, 'config/.env'), join(__dirname, `config/.env.${process.env.NODE_ENV}`)],
+      envFilePath: [`${process.env.NODE_ENV}`.length == 0 ? join(__dirname, `config/.env.${process.env.NODE_ENV}`) : join(__dirname, 'config/.env')],
       isGlobal: true,
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const uri = configService.get('MONGO_CONNECTION')
+        return {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          useCreateIndex: true,
+          useFindAndModify: false,
+          uri
+        }
+      }
     }),
   ],
 })
