@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, ValidationPipe } from '@nestjs/common';
 import { CatsModule } from './cats/cats.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { MongooseModule } from "@nestjs/mongoose";
+import { APP_PIPE } from "@nestjs/core";
 
 @Module({
   imports: [
@@ -52,5 +53,11 @@ import { MongooseModule } from "@nestjs/mongoose";
       }
     }),
   ],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe
+    }
+  ]
 })
 export class AppModule {}
