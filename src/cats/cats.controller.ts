@@ -6,16 +6,21 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
+import { JoiValidationPipe } from "../validation/validation.pipe";
+import { validationSchema } from "../validation/validationSchema";
 
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
+  @UsePipes(new JoiValidationPipe(validationSchema))
   create(@Body() createCatDto: CreateCatDto) {
     return this.catsService.create(createCatDto);
   }
@@ -31,12 +36,12 @@ export class CatsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
-    return this.catsService.update(+id, updateCatDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateCatDto: UpdateCatDto) {
+    return this.catsService.update(id, updateCatDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.catsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.catsService.remove(id);
   }
 }
