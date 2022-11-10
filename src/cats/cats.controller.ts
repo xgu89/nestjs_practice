@@ -13,7 +13,7 @@ import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
 import { JoiValidationPipe } from "../validation/validation.pipe";
-import { validationSchema } from "../validation/validationSchema";
+import { validationSchema } from "../validation/validation.schema";
 
 @Controller('cats')
 export class CatsController {

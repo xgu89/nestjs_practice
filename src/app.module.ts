@@ -1,4 +1,4 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { CatsModule } from './cats/cats.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HealthCheckModule } from './health-check/health-check.module';
@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { MongooseModule } from "@nestjs/mongoose";
 import { APP_PIPE } from "@nestjs/core";
+import { logger, LoggerMiddleware } from "./middleware/logger.middleware";
 
 @Module({
   imports: [
@@ -60,4 +61,10 @@ import { APP_PIPE } from "@nestjs/core";
     }
   ]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
